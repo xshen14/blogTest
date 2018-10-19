@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--对应的接口文件-->
+<mapper namespace="com.show.dao.GoodsDao">
+
+    <!-- 自定义返回结果集 -->
+    <resultMap id="goodsMap" type="com.show.entity.Goods"/>
+        <!--<id property="code" column="code" javaType="java.lang.String"></id>
+        <result property="name" column="name" javaType="java.lang.String"></result>
+        <result property="barcode" column="barcode" javaType="java.lang.String"></result>
+    </resultMap>-->
+    <!-- 在各种标签中的id属性必须和接口中的方法名相同 ， id属性值必须是唯一的，不能够重复使用。parameterType属性指明查询时使用的参数类型，resultType属性指明查询返回的结果集类型-->
+    <!-- useGeneratedKeys：（ 仅 对 insert 有 用 ） 这 会 告 诉 MyBatis 使 用 JDBC 的getGeneratedKeys
+                方法来取出由数据（比如：像 MySQL 和 SQLServer 这样的数据库管理系统的自动递增字段）内部生成的主键。默认值： false。 -->
+    <!--keyProperty： （仅对 insert有用）标记一个属性， MyBatis 会通过 getGeneratedKeys或者通过 insert 语句的 selectKey 子元素设置它的值。默认：不设置。 -->
+    <!--#{}中的内容，为占位符，当参数为某个JavaBean时，表示放置该Bean对象的属性值  -->
+
+
+    <insert id="insertGoods" useGeneratedKeys="true" keyProperty="code">
+        insert into qnh_goods (code,name,barcode,spec) values (#{code},#{name},#{barcode},#{spec})
+    </insert>
+
+    <update id="updateGoodsById">
+        update qnh_goods set name=#{name},barcode=#{barcode},spec=#{spec} where code=#{code}
+    </update>
+
+    <delete id="deleteGoodsById" parameterType="String">
+        delete from qnh_goods where code=#{id}
+    </delete>
+
+    <select id="selectGoodsById" parameterType="String" resultMap="goodsMap">
+        select * from qnh_goods where code=#{id}
+    </select>
+
+    <select id="findAll" resultMap="goodsMap">
+        select * from qnh_goods
+    </select>
+
+    <!-- 根据分页数据start 和size查询数据 -->
+    <select id="findByPage" parameterType="Map" resultMap="goodsMap">
+        select * from qnh_goods
+        <if test="start!=null and size!=null">
+            limit #{start},#{size}
+        </if>
+    </select>
+
+    <select id="selectGoodsCount" resultType="int">
+        select count(*) from qnh_goods
+    </select>
+
+    <insert id="insertGoodsList" parameterType="java.util.List">
+        insert into qnh_goods (code,name,barcode,spec) values
+    <foreach collection="list" item="item" index="index" separator=",">
+        (#{item.code},#{item.name},#{item.barcode},#{item.spec})
+    </foreach>
+    </insert>
+
+
+
+</mapper>
